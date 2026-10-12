@@ -25,3 +25,10 @@ Fractional seconds are truncated to microseconds rather than rounded, because ro
 Interval parsing supports only the `<start>/<end>` solidus form. The double-solidus form (`<start>//<duration>`) is deliberately not supported: a string like `2020-01-01T00:00:00Z//P1D` would be ambiguous between "start//duration" and "start/end" where the end begins with `/P`. If you need duration syntax, parse it yourself before calling this library.
 
 Offset hours are capped at 23 and minutes at 59, matching RFC 3339. Real-world offsets do not exceed these, but the grammar alone (two digits) would permit `+99:99`.
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
